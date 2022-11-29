@@ -44,7 +44,6 @@ export default {
     font-weight: bold;
     background-color: #dd2852;
     border: none;
-    color: #eee3e3;
     letter-spacing: 2px;
     text-transform: uppercase;
     border-radius: 50px;
@@ -54,6 +53,11 @@ export default {
     }
     &:active {
       transform: translateY(1px);
+    }
+
+    a{
+      color: #eee3e3;
+      text-decoration: none;
     }
   }
 }
