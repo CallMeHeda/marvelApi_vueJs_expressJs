@@ -13,7 +13,13 @@
 
     <div id="charactersImgBox">
       <div id="imgCharacterDiv" v-for="hero in heros">
-        <div v-if="hero.thumbnail">
+        <div v-if="hero.thumbnail.path.includes('4c002e0305708')">
+          <img class="charactersImg" src="../assets/images/notFound.jpg">
+          <div id="infosCharactereBox">
+            <a href="" class="hrefDescription"><p id="charactereName">{{ hero.name }}</p></a>
+          </div>
+        </div>
+        <div v-else>
           <img class="charactersImg" :src="hero.thumbnail.path + sizeImg + hero.thumbnail.extension">
           <div id="infosCharactereBox">
             <a href="" class="hrefDescription"><p id="charactereName">{{ hero.name }}</p></a>
