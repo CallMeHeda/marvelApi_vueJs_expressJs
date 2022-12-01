@@ -13,7 +13,12 @@
 
     <div id="charactersImgBox">
       <div id="imgCharacterDiv" v-for="hero in heros">
-        <img class="charactersImg" :src="hero.thumbnail.path + '.' + hero.thumbnail.extension">
+        <div v-if="hero.thumbnail">
+          <img class="charactersImg" :src="hero.thumbnail.path + sizeImg + hero.thumbnail.extension">
+          <div id="infosCharactereBox">
+            <a href="" class="hrefDescription"><p id="charactereName">{{ hero.name }}</p></a>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -28,129 +33,58 @@
 import { Md5 } from 'ts-md5';
 
 const APIURL = "http://gateway.marvel.com/v1/public/";
-const APIPUBLICKEY = 'b6bf4c6d62c46794eb7688c596a126e8';
-const MY_PRIVATE_API_KEY = '306001b9841d72c15ace775058127bdf91d38a38'
-// 1 + PRIVATE KEY + PUBLIC KEY
+const APIPUBLICKEY = 'd4509d8741ad3378f24fb6b93f84b6aa';
+const MY_PRIVATE_API_KEY = '76ade49434b3426ff16e9e83fe5c952f4825f6d6'
 const HASH = Md5.hashStr(`1${MY_PRIVATE_API_KEY}${APIPUBLICKEY}`);
 
-// let cpt: number = 0
-// let datas: any[]
-
 export default {
-
   data() {
     return {
       heros: [{
-        name: String,
+        name: "",
         thumbnail: {
-          path: String,
-          extension: String
+          path: "",
+          extension: ""
         },
       }],
-      img: String
+      sizeImg: "/standard_xlarge."
     }
   },
   methods: {
     mounted() {
       let promise = [];
-      // 1559 données
       for (let i = 0; i < 1600; i += 100) {
         promise.push(
           fetch(
             `${APIURL}characters?&ts=1&apikey=${APIPUBLICKEY}&hash=${HASH}&limit=100&offset=${i}`
           ).then((response) => {
             if (response.ok) {
-              // console.log(response.json())
               return response.json();
             } else {
               throw new Error("La requête n'a pas abouti");
             }
           })
-            .then(data => {
-              let randomIMG = Math.round(Math.random() * 100);
-              let randomIMGLastLine = Math.round(Math.random() * 58);
-              this.heros = data.data.results
-              for (let j = 0; j < data.data.results.length - 1; j++) {
-                // console.log(this.heros[j].name)
-              }
-            })
         );
       }
+
+      Promise.all(promise).then((data) => {
+        let randomIMG = Math.round(Math.random() * 100);
+        let randomIMGLastLine = Math.round(Math.random() * 58);
+
+        this.heros = data
+
+        for (let i = 0; i < this.heros.length - 1; i++) {
+          this.heros[i] = data[i].data.results[randomIMG]
+        }
+        this.heros[15] = data[15].data.results[randomIMGLastLine]
+        console.log(this.heros)
+      })
     }
   },
   created: function () {
     this.mounted();
   }
 }
-
-  //   // props: {},
-  //   methods: {
-  //     compteur() {
-  //       let counterBox = document.getElementById("counter")
-  //       // let container: any = document.getElementById("container")
-  //       // let percent: any = document.getElementById("pourcentage")
-  //       // let hr: any = document.getElementById("hr")
-
-  //       // console.log('container ' , container, ' counter', counterBox)
-
-  //       // if (counterBox) {
-  //       // const interval = setInterval(function () {
-  //       //   if (container === null && percent === null && hr === null) {
-  //       // container.style.display = "none";
-  //       // percent.textContent = `${cpt}%`;
-  //       // hr.style.width = cpt ;
-  //       // console.log('yes')+
-  //       // }
-
-  //       // cpt++;
-
-  //       // console.log(cpt)
-
-  //       // if (cpt > 100 && container && counterBox) {
-  //       //   clearInterval(interval);
-  //       //   container.style.display = "flex";
-  //       //   counterBox.style.display = "none";
-  //       //   console.log('hey 2')
-  //       // }
-  //       // }, 55);
-
-  //       // TABLEAU D'URL
-  //       let promise = [];
-  //       // 1559 données
-  //       for (let i = 0; i < 1600; i += 100) {
-  //         promise.push(
-  //           fetch(
-  //             `${APIURL}characters?&ts=1&apikey=${APIPUBLICKEY}&hash=${HASH}&limit=100&offset=${i}`
-  //           ).then((response) => {
-  //             if (response.ok) {
-  //               // console.log(response.json())
-  //               return response.json();
-  //             } else {
-  //               console.log("La requête n'a pas abouti")
-  //               // throw new Error("La requête n'a pas abouti");
-  //             }
-  //           })
-  //         );
-  //       }
-  //       Promise.all(promise)
-  //         .then(function (data) {
-  //           let randomIMG = Math.round(Math.random() * 100);
-  //           let randomIMGLastLine = Math.round(Math.random() * 58);
-
-  //           for (let j = 0; j < data.length - 1; j++) {
-  //             datas = data[j].data.results
-  //             console.log(datas)
-  //           }
-  //         })
-
-  //       // }
-  //     }
-  //   },
-  //   created: function () {
-  //     this.compteur();
-  //   }
-// };
-
 </script>
 
 <style scoped lang="scss">
@@ -159,6 +93,7 @@ export default {
   flex-flow: column wrap;
 }
 
+// COMPTEUR
 #counter {
   display: flex;
   flex-direction: column;
@@ -203,6 +138,7 @@ export default {
   }
 }
 
+// INPUT DE RECHERCHE
 #herosNameInputBox {
   display: flex;
   flex-flow: row wrap;
@@ -219,6 +155,81 @@ export default {
     &:focus {
       outline: none;
     }
+  }
+}
+
+// IMAGE PERSONNAGES
+#charactersImgBox {
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: center;
+  margin-top: 25px;
+
+  #imgCharacterDiv {
+    display: flex;
+    position: relative;
+    border-radius: 100%;
+
+    margin: 15px;
+
+    .charactersImg {
+      border: 10px double rgb(24, 23, 23);
+      display: flex;
+      width: 100%;
+      height: auto;
+      border-radius: 100%;
+    }
+
+    #infosCharactereBox {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border-radius: 100%;
+      overflow: hidden;
+      opacity: 0;
+      transition: all 0.5s ease-in-out;
+      transform: scale(0);
+      backface-visibility: hidden;
+
+      a {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+        height: 100%;
+        text-decoration: none;
+
+        #charactereName {
+          color: rgb(24, 23, 23);
+          font-size: 22px;
+          font-weight: 900;
+          text-transform: uppercase;
+          text-align: center;
+        }
+      }
+    }
+
+    &:hover #infosCharactereBox {
+      box-shadow: inset 0 0 0 110px rgba(228, 223, 220, 0.575),
+        inset 0 0 0 16px rgba(255, 255, 255, 0.473),
+        0 1px 2px rgba(0, 0, 0, 0.164);
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    &:hover .charactersImg {
+      border: 10px double transparent;
+    }
+  }
+
+  #heroEmpty {
+    font-size: 50px;
+    color: rgb(24, 23, 23);
+    margin-top: 2%;
+    letter-spacing: 1px;
   }
 }
 </style>

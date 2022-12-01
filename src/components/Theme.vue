@@ -2,3 +2,7 @@
     <input type="checkbox" id="switch" onclick="switch_theme()">
     <span class="slider round"></span>
 </label>
+
+<script lang="ts">
+
+</script>
