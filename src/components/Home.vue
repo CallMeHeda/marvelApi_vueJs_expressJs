@@ -13,10 +13,8 @@ export default {
     return {
       link : 
         {url : '/characters', name : "Meet them all"},
-    };
-  },
-  // props: {},
-  // methods: {},
+    }
+  }
 };
 
 </script>

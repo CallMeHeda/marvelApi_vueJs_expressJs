@@ -12,27 +12,35 @@
     </div>
 
     <div id="charactersImgBox">
-      <div id="imgCharacterDiv" v-for="hero in heros">
-        <div v-if="hero.thumbnail.path.includes('4c002e0305708')">
-          <img class="charactersImg" src="../assets/images/notFound.jpg">
-          <div id="infosCharactereBox">
-            <a href="" class="hrefDescription"><p id="charactereName">{{ hero.name }}</p></a>
+      <div id="imgCharacterDiv" v-for="hero in heros" :key="hero.id">
+        <div class="charactersImg" v-if="hero.thumbnail.path.includes('4c002e0305708')">
+          <img src="../assets/images/notFound.jpg">
+          <div id="infosCharactereBox" v-if="hero.url_name">
+            <RouterLink :to="{ name: 'details', params: { hero_name: hero.url_name } }">
+              <a class="hrefDescription">
+                <p id="charactereName">{{ hero.name }}</p>
+              </a>
+            </RouterLink>
           </div>
         </div>
-        <div v-else>
-          <img class="charactersImg" :src="hero.thumbnail.path + sizeImg + hero.thumbnail.extension">
-          <div id="infosCharactereBox">
-            <a href="" class="hrefDescription"><p id="charactereName">{{ hero.name }}</p></a>
+        <div class="charactersImg" v-else>
+          <img :src="hero.thumbnail.path + sizeImg + hero.thumbnail.extension">
+          <div id="infosCharactereBox" v-if="hero.url_name">
+            <RouterLink :to="{ name: 'details', params: { hero_name: hero.url_name } }">
+              <a class="hrefDescription">
+                <p id="charactereName">{{ hero.name }}</p>
+              </a>
+            </RouterLink>
           </div>
         </div>
       </div>
     </div>
   </div>
-  <!-- <div id="counter">
+  <div id="counter">
     <p>loading</p>
     <h1 id="pourcentage"></h1>
     <hr id="hr">
-  </div> -->
+  </div>
 </template>
 
 <script lang="ts">
@@ -47,18 +55,41 @@ export default {
   data() {
     return {
       heros: [{
+        id: Number,
         name: "",
         thumbnail: {
           path: "",
           extension: ""
         },
+        url_name: ""
       }],
-      sizeImg: "/standard_xlarge."
+      sizeImg: "/standard_xlarge.",
+      link: 'details/'
     }
   },
   methods: {
     mounted() {
       let promise = [];
+      // let counterBox;
+
+      // if (counterBox) {
+      //   window.onload = function () {
+      //     let cpt = 0;
+      //     const interval = setInterval(function () {
+      //       document.getElementById("container").style.display = "none";
+
+      //       document.getElementById("pourcentage").textContent = `${cpt}%`;
+      //       document.getElementById("hr").style.width = `${cpt}%`;
+
+      //       cpt++;
+
+      //       if (cpt > 100) {
+      //         clearInterval(interval);
+      //         document.getElementById("container").style.display = "flex";
+      //         document.getElementById("counter").style.display = "none";
+      //       }
+      //     }, 55);
+
       for (let i = 0; i < 1600; i += 100) {
         promise.push(
           fetch(
@@ -81,10 +112,12 @@ export default {
 
         for (let i = 0; i < this.heros.length - 1; i++) {
           this.heros[i] = data[i].data.results[randomIMG]
+          this.heros[i].url_name = this.heros[i].name.split(' ').join('_')
         }
         this.heros[15] = data[15].data.results[randomIMGLastLine]
-        console.log(this.heros)
+        this.heros[15].url_name = this.heros[15].name.split(' ').join('_')
       })
+
     }
   },
   created: function () {
@@ -184,6 +217,10 @@ export default {
       width: 100%;
       height: auto;
       border-radius: 100%;
+
+      img {
+        border-radius: 100%;
+      }
     }
 
     #infosCharactereBox {
@@ -191,6 +228,10 @@ export default {
       justify-content: center;
       align-items: center;
       position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
       width: 100%;
       height: 100%;
       border-radius: 100%;
