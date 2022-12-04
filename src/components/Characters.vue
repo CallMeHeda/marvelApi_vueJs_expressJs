@@ -1,5 +1,5 @@
 <template>
-  <div class="container" id="container">
+  <div class="container" id="container" ref="container">
     <!-- AJOUTER SWITCH THEME ICI -->
 
     <div class="titleBox">
@@ -13,7 +13,7 @@
 
     <div id="charactersImgBox">
       <div id="imgCharacterDiv" v-for="hero in heros" :key="hero.id">
-        <div class="charactersImg" v-if="hero.thumbnail.path.includes('4c002e0305708')">
+        <div class="charactersImg" v-if="hero.thumbnail.path && hero.thumbnail.path.includes('4c002e0305708')">
           <img src="../assets/images/notFound.jpg">
           <div id="infosCharactereBox" v-if="hero.url_name">
             <RouterLink :to="{ name: 'details', params: { hero_name: hero.url_name } }">
@@ -23,7 +23,7 @@
             </RouterLink>
           </div>
         </div>
-        <div class="charactersImg" v-else>
+        <div class="charactersImg" v-if="hero.thumbnail.path && !hero.thumbnail.path.includes('4c002e0305708')">
           <img :src="hero.thumbnail.path + sizeImg + hero.thumbnail.extension">
           <div id="infosCharactereBox" v-if="hero.url_name">
             <RouterLink :to="{ name: 'details', params: { hero_name: hero.url_name } }">
@@ -36,15 +36,17 @@
       </div>
     </div>
   </div>
-  <div id="counter">
+
+  <div id="counter" ref="counter">
     <p>loading</p>
-    <h1 id="pourcentage"></h1>
-    <hr id="hr">
+    <h1 id="pourcentage" ref="pourcentage"></h1>
+    <hr id="hr" ref="hr">
   </div>
 </template>
 
 <script lang="ts">
 import { Md5 } from 'ts-md5';
+import { ref, onMounted } from 'vue'
 
 const APIURL = "http://gateway.marvel.com/v1/public/";
 const APIPUBLICKEY = 'd4509d8741ad3378f24fb6b93f84b6aa';
@@ -70,25 +72,34 @@ export default {
   methods: {
     mounted() {
       let promise = [];
-      // let counterBox;
 
-      // if (counterBox) {
-      //   window.onload = function () {
-      //     let cpt = 0;
-      //     const interval = setInterval(function () {
-      //       document.getElementById("container").style.display = "none";
+      onMounted(() => {
+        if (this.$refs.counter) {
+          const CONTAINER : any = this.$refs.container
+          const COUNTER : any = this.$refs.counter
+          const POURCENTAGE : any = this.$refs.pourcentage
+          const HR : any = this.$refs.hr
 
-      //       document.getElementById("pourcentage").textContent = `${cpt}%`;
-      //       document.getElementById("hr").style.width = `${cpt}%`;
+          console.log(typeof(CONTAINER))
 
-      //       cpt++;
+          let cpt = 0;
+          const interval = setInterval(function () {
+            CONTAINER.style.display = "none"
+            POURCENTAGE.textContent = cpt
+            HR.style.width = cpt + '%'
 
-      //       if (cpt > 100) {
-      //         clearInterval(interval);
-      //         document.getElementById("container").style.display = "flex";
-      //         document.getElementById("counter").style.display = "none";
-      //       }
-      //     }, 55);
+            cpt++
+
+            if (cpt > 100) {
+              clearInterval(interval);
+              CONTAINER.style.display = "flex";
+              COUNTER.style.display = "none";
+            }
+          }, 55)
+
+          // this.$refs.counter.style.display = "none"
+        }
+      });
 
       for (let i = 0; i < 1600; i += 100) {
         promise.push(
@@ -117,7 +128,6 @@ export default {
         this.heros[15] = data[15].data.results[randomIMGLastLine]
         this.heros[15].url_name = this.heros[15].name.split(' ').join('_')
       })
-
     }
   },
   created: function () {
