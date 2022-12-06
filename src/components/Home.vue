@@ -1,22 +1,19 @@
 <template>
-    <div class="containerHome">
-        <button id="homeBtn">
-          <RouterLink :to="link.url">{{ link.name }}</RouterLink>
-        </button>
-    </div>
+  <div class="containerHome">
+    <button id="homeBtn">
+      <RouterLink :to="link.url">{{ link.name }}</RouterLink>
+    </button>
+  </div>
 </template>
 
 <script lang="ts">
-
 export default {
   data() {
     return {
-      link : 
-        {url : '/characters', name : "Meet them all"},
-    }
-  }
+      link: { url: "/characters", name: "Meet them all" },
+    };
+  },
 };
-
 </script>
 
 <style scoped lang="scss">
@@ -53,7 +50,7 @@ export default {
       transform: translateY(1px);
     }
 
-    a{
+    a {
       color: #eee3e3;
       text-decoration: none;
     }

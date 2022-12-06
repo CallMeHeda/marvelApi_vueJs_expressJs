@@ -7,14 +7,14 @@
     </div>
 
     <div id="herosNameInputBox">
-      <input type="text" id="herosName" placeholder="Hero's Name">
+      <input type="text" id="herosName" placeholder="Hero's Name" />
       <!-- <input type="button" value="Give Me My Hero" id="btnSearch" onclick="searchHero();" required> -->
     </div>
 
     <div id="charactersImgBox">
       <div id="imgCharacterDiv" v-for="hero in heros" :key="hero.id">
         <div class="charactersImg" v-if="hero.thumbnail.path && hero.thumbnail.path.includes('4c002e0305708')">
-          <img src="../assets/images/notFound.jpg">
+          <img src="../assets/images/notFound.jpg" />
           <div id="infosCharactereBox" v-if="hero.url_name">
             <RouterLink :to="{ name: 'details', params: { hero_name: hero.url_name } }">
               <a class="hrefDescription">
@@ -23,12 +23,16 @@
             </RouterLink>
           </div>
         </div>
-        <div class="charactersImg" v-if="hero.thumbnail.path && !hero.thumbnail.path.includes('4c002e0305708')">
-          <img :src="hero.thumbnail.path + sizeImg + hero.thumbnail.extension">
+        <div class="charactersImg" v-if="
+          hero.thumbnail.path &&
+          !hero.thumbnail.path.includes('4c002e0305708')
+        ">
+          <img :src="hero.thumbnail.path + sizeImg + hero.thumbnail.extension" />
           <div id="infosCharactereBox" v-if="hero.url_name">
             <RouterLink :to="{ name: 'details', params: { hero_name: hero.url_name } }">
               <a class="hrefDescription">
                 <p id="charactereName">{{ hero.name }}</p>
+                <!-- <p id="charactereName" @click="$emit('getHeroName', hero.name)">{{ hero.name }}</p> -->
               </a>
             </RouterLink>
           </div>
@@ -40,34 +44,38 @@
   <div id="counter" ref="counter">
     <p>loading</p>
     <h1 id="pourcentage" ref="pourcentage"></h1>
-    <hr id="hr" ref="hr">
+    <hr id="hr" ref="hr" />
   </div>
 </template>
 
 <script lang="ts">
-import { Md5 } from 'ts-md5';
-import { ref, onMounted } from 'vue'
+import { config } from "../../config";
+import { Md5 } from "ts-md5";
+import { onMounted } from "vue";
 
-const APIURL = "http://gateway.marvel.com/v1/public/";
-const APIPUBLICKEY = 'd4509d8741ad3378f24fb6b93f84b6aa';
-const MY_PRIVATE_API_KEY = '76ade49434b3426ff16e9e83fe5c952f4825f6d6'
+const APIURL = config.MY_API_URL;
+const APIPUBLICKEY = config.MY_PUBLIC_API_KEY;
+const MY_PRIVATE_API_KEY = config.MY_PRIVATE_API_KEY;
 const HASH = Md5.hashStr(`1${MY_PRIVATE_API_KEY}${APIPUBLICKEY}`);
 
 export default {
   data() {
     return {
-      heros: [{
-        id: Number,
-        name: "",
-        thumbnail: {
-          path: "",
-          extension: ""
+      heros: [
+        {
+          id: Number,
+          name: "",
+          thumbnail: {
+            path: "",
+            extension: "",
+          },
+          url_name: "",
         },
-        url_name: ""
-      }],
+      ],
       sizeImg: "/standard_xlarge.",
-      link: 'details/'
-    }
+      link: "details/",
+      heroName: "",
+    };
   },
   methods: {
     mounted() {
@@ -75,29 +83,27 @@ export default {
 
       onMounted(() => {
         if (this.$refs.counter) {
-          const CONTAINER : any = this.$refs.container
-          const COUNTER : any = this.$refs.counter
-          const POURCENTAGE : any = this.$refs.pourcentage
-          const HR : any = this.$refs.hr
+          const CONTAINER: any = this.$refs.container;
+          const COUNTER: any = this.$refs.counter;
+          const POURCENTAGE: any = this.$refs.pourcentage;
+          const HR: any = this.$refs.hr;
 
-          console.log(typeof(CONTAINER))
+          // console.log("type ", this.$refs.container)
 
           let cpt = 0;
           const interval = setInterval(function () {
-            CONTAINER.style.display = "none"
-            POURCENTAGE.textContent = cpt
-            HR.style.width = cpt + '%'
+            CONTAINER.style.display = "none";
+            POURCENTAGE.textContent = cpt;
+            HR.style.width = cpt + "%";
 
-            cpt++
+            cpt++;
 
             if (cpt > 100) {
               clearInterval(interval);
               CONTAINER.style.display = "flex";
               COUNTER.style.display = "none";
             }
-          }, 55)
-
-          // this.$refs.counter.style.display = "none"
+          }, 100);
         }
       });
 
@@ -119,21 +125,22 @@ export default {
         let randomIMG = Math.round(Math.random() * 100);
         let randomIMGLastLine = Math.round(Math.random() * 58);
 
-        this.heros = data
+        this.heros = data;
 
         for (let i = 0; i < this.heros.length - 1; i++) {
-          this.heros[i] = data[i].data.results[randomIMG]
-          this.heros[i].url_name = this.heros[i].name.split(' ').join('_')
+          this.heros[i] = data[i].data.results[randomIMG];
+          this.heros[i].url_name = this.heros[i].name.split(" ").join("_");
         }
-        this.heros[15] = data[15].data.results[randomIMGLastLine]
-        this.heros[15].url_name = this.heros[15].name.split(' ').join('_')
-      })
+        this.heros[15] = data[15].data.results[randomIMGLastLine];
+        this.heros[15].url_name = this.heros[15].name.split(" ").join("_");
+      });
     }
   },
   created: function () {
     this.mounted();
-  }
-}
+  },
+  watch: {},
+};
 </script>
 
 <style scoped lang="scss">
