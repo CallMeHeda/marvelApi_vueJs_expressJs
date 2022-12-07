@@ -27,4 +27,5 @@ coverage
 *.sln
 *.sw?
 
-.config.ts
+# Config
+/config.ts
