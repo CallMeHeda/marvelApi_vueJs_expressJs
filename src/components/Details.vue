@@ -2,7 +2,9 @@
     <div class="container">
         <div id="prevPageAndSwitch">
             <div id="prevPage">
-                <a href=""><font-awesome-icon icon="fa-solid fa-circle-left" size="2x" /></a>
+                <RouterLink :to="{ name: 'characters' }">
+                    <a><font-awesome-icon icon="fa-solid fa-circle-left" size="2x" /></a>
+                </RouterLink>
             </div>
         </div>
 
@@ -18,25 +20,45 @@
                         :alt="hero[0].name + ' image'" id="imgDescription" />
                 </div>
 
-                <div id="descriptionBox">
-                    <p id="description"></p>
+                <div id="descriptionBox" v-if="hero[0].description">
+                    <p id="description">{{ hero[0].description }}</p>
+                </div>
+
+                <div id="descriptionBox" v-if="!hero[0].description">
+                    <p id="description">{{ hero[0].name.split(/[(].+/).join("") }} is a hero with some power. Sorry I
+                        can't tell you more. Google it!</p>
                 </div>
             </div>
 
             <div id="listBox">
                 <div id="comicsBox">
-                    <h3>Comics :</h3>
-                    <ul id="comicsList"></ul>
+                    <h3>Comics : ({{ hero[0].comics.available }} available)</h3>
+                    <ul id="comicsList" v-if="(hero[0].comics.items.length > 0)">
+                        <li v-for="comic in hero[0].comics.items">{{ comic.name }}</li>
+                    </ul>
+                    <ul id="comicsList" v-if="(hero[0].comics.items.length == 0)">
+                        <li>0 Comic Book</li>
+                    </ul>
                 </div>
 
                 <div id="serieBox">
-                    <h3>Series :</h3>
-                    <ul id="serieList"></ul>
+                    <h3>Series : ({{ hero[0].series.available }} available)</h3>
+                    <ul id="serieList" v-if="(hero[0].series.items.length > 0)">
+                        <li v-for="serie in hero[0].series.items">{{ serie.name }}</li>
+                    </ul>
+                    <ul id="serieList" v-if="(hero[0].series.items.length == 0)">
+                        <li>0 Serie</li>
+                    </ul>
                 </div>
 
                 <div id="storiesBox">
-                    <h3>Stories :</h3>
-                    <ul id="storiesList"></ul>
+                    <h3>Stories : ({{ hero[0].stories.available }} available)</h3>
+                    <ul id="storiesList" v-if="(hero[0].stories.items.length > 0)">
+                        <li v-for="story in hero[0].stories.items">{{ story.name }}</li>
+                    </ul>
+                    <ul id="storiesList" v-if="(hero[0].stories.items.length == 0)">
+                        <li>0 Story</li>
+                    </ul>
                 </div>
             </div>
         </div>
@@ -266,6 +288,7 @@ export default {
                     color: rgb(24, 23, 23);
                     letter-spacing: 1px;
                     font-size: 17px;
+                    padding: 0;
                     margin-top: 5px;
                 }
             }
