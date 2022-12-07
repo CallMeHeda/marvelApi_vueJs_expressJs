@@ -7,7 +7,7 @@
     </div>
 
     <div id="herosNameInputBox">
-      <input type="text" id="herosName" placeholder="Hero's Name" />
+      <input type="text" id="herosName" placeholder="Hero's Name">
       <!-- <input type="button" value="Give Me My Hero" id="btnSearch" onclick="searchHero();" required> -->
     </div>
 
