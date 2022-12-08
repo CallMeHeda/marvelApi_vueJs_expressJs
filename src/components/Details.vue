@@ -134,6 +134,7 @@ export default {
             sizeImg: "/portrait_uncanny.",
             footerStyle: {
                 color: "#eee3e3",
+                position: "relative"
             }
         };
     },

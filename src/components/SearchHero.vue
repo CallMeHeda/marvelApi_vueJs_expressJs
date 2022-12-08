@@ -13,70 +13,14 @@ const APIURL = config.MY_API_URL;
 const APIPUBLICKEY = config.MY_PUBLIC_API_KEY;
 const MY_PRIVATE_API_KEY = config.MY_PRIVATE_API_KEY;
 const HASH = Md5.hashStr(`1${MY_PRIVATE_API_KEY}${APIPUBLICKEY}`)
-// const emit = defineEmits(['search']);
 
 export default {
     data() {
         return {
-            // heros: [
-            //     {
-            //         id: Number,
-            //         name: "",
-            //         thumbnail: {
-            //             path: "",
-            //             extension: "",
-            //         },
-            //         url_name: "",
-            //     },
-            // ],
-            // sizeImg: "/standard_xlarge.",
-            // link: "details/",
-            // heroName: "",
-            // footerStyle: {
-            //     color: "#eee3e3",
-            // },
             searchHero: "",
-            // noSearch: true
-
         };
     },
-    methods: {
-        search() {
-            // let promise = []
-            
-            // // emit('search', this.searchHero);
-            // for (let i = 0; i < 1600; i += 100) {
-            //     promise.push(
-            //         fetch(
-            //             `${APIURL}characters?nameStartsWith=${this.searchHero}&ts=1&apikey=${APIPUBLICKEY}&hash=${HASH}&limit=100&offset=${i}`
-            //         ).then((response) => {
-            //             if (response.ok) {
-            //                 return response.json();
-            //             } else {
-            //                 throw new Error("La requête n'a pas abouti");
-            //             }
-            //         })
-            //     );
-            // }
-
-            // Promise.all(promise).then((data) => {
-                // let randomIMG = Math.round(Math.random() * 100);
-                // let randomIMGLastLine = Math.round(Math.random() * 58);
-
-                // this.heros = data;
-                // console.log("data : ", this.heros)
-
-                // for (let i = 0; i < 1600; i++) {
-                    
-                    // this.heros[i] = data[i].data.results[i];
-                    // this.heros[i].url_name = this.heros[i].name.split(" ").join("_");
-                // }
-                // console.log("data : ", this.heros)
-                // this.heros[15] = data[15].data.results[randomIMGLastLine];
-                // this.heros[15].url_name = this.heros[15].name.split(" ").join("_");
-            // });
-        }
-    },
+    methods: {},
     emits: ['search']
 }
 </script>

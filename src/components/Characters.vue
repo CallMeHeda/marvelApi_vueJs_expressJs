@@ -8,12 +8,7 @@
 
     <SearchHero @search="search" />
 
-    <!-- <div id="herosNameInputBox">
-      <input type="text" id="herosName" placeholder="Hero's Name" v-model="searchHero">
-      <input type="button" value="Give Me My Hero" id="btnSearch" @click="search" required>
-    </div> -->
-
-    <div id="charactersImgBox">
+    <div id="charactersImgBox" v-if="(heros.length > 0)">
       <div id="imgCharacterDiv" v-for="hero in heros" :key="hero.id">
         <div class="charactersImg" v-if="hero.thumbnail.path && hero.thumbnail.path.includes('4c002e0305708')">
           <img src="../assets/images/notFound.jpg" />
@@ -41,6 +36,7 @@
         </div>
       </div>
     </div>
+    <div id="heroEmpty" v-if="(heros.length == 0)">NOPE</div>
     <Footer :style="footerStyle" />
   </div>
 
@@ -133,6 +129,7 @@ export default {
       Promise.all(promise).then((data) => {
         let randomIMG = Math.round(Math.random() * 100);
         let randomIMGLastLine = Math.round(Math.random() * 58);
+        // console.log("data all heros: ", data)
 
         this.heros = data;
 
@@ -142,37 +139,34 @@ export default {
         }
         this.heros[15] = data[15].data.results[randomIMGLastLine];
         this.heros[15].url_name = this.heros[15].name.split(" ").join("_");
+
+        // console.log("heros all: ", this.heros)
+
       });
     },
-    search() {
+    search(hero: string) {
       let promise = []
 
-      // emit('search', this.searchHero);
-      // for (let i = 0; i < 1600; i += 100) {
-        promise.push(
-          fetch(
-            `${APIURL}characters?nameStartsWith=hulk&ts=1&apikey=${APIPUBLICKEY}&hash=${HASH}&limit=100`
-          ).then((response) => {
-            if (response.ok) {
-              return response.json();
-            } else {
-              throw new Error("La requête n'a pas abouti");
-            }
-          })
-        );
-      // }
+      promise.push(
+        fetch(
+          `${APIURL}characters?nameStartsWith=${hero}&ts=1&apikey=${APIPUBLICKEY}&hash=${HASH}&limit=100`
+        ).then((response) => {
+          if (response.ok) {
+            return response.json();
+          } else {
+            throw new Error("La requête n'a pas abouti");
+          }
+        })
+      );
 
       Promise.all(promise).then((data) => {
 
         this.heros = data[0].data.results;
-        console.log("data: ", data)
 
-        // for (let i = 0; i < 9; i++) {
-        //   this.heros[i] = data[0];
-          this.heros[0].url_name = this.heros[0].name.split(" ").join("_");
-        // }
+        for (let i = 0; i < this.heros.length; i++) {
+        this.heros[i].url_name = this.heros[i].name.split(" ").join("_");
+        }
 
-        console.log("heros: ", this.heros)
       });
     }
   },
@@ -287,12 +281,21 @@ export default {
       }
     }
 
-    #heroEmpty {
+    // #heroEmpty {
+    //   align-self: center;
+    //   font-size: 50px;
+    //   color: #dd2852;
+    //   margin-top: 2%;
+    //   letter-spacing: 1px;
+    // }
+  }
+
+  #heroEmpty {
+    align-self: center;
       font-size: 50px;
-      color: rgb(24, 23, 23);
+      color: #dd2852;
       margin-top: 2%;
       letter-spacing: 1px;
-    }
   }
 }
 
