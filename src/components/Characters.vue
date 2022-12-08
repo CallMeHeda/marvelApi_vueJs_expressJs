@@ -6,10 +6,12 @@
       <h1 id="title"><span>Marvel</span> characters<span>.</span></h1>
     </div>
 
-    <div id="herosNameInputBox">
-      <input type="text" id="herosName" placeholder="Hero's Name">
-      <!-- <input type="button" value="Give Me My Hero" id="btnSearch" onclick="searchHero();" required> -->
-    </div>
+    <SearchHero @search="search" />
+
+    <!-- <div id="herosNameInputBox">
+      <input type="text" id="herosName" placeholder="Hero's Name" v-model="searchHero">
+      <input type="button" value="Give Me My Hero" id="btnSearch" @click="search" required>
+    </div> -->
 
     <div id="charactersImgBox">
       <div id="imgCharacterDiv" v-for="hero in heros" :key="hero.id">
@@ -53,6 +55,7 @@
 import { config } from "../../config";
 import { Md5 } from "ts-md5";
 import { onMounted } from "vue";
+import SearchHero from "./SearchHero.vue"
 import Footer from "./Footer.vue"
 
 const APIURL = config.MY_API_URL;
@@ -77,14 +80,13 @@ export default {
       sizeImg: "/standard_xlarge.",
       link: "details/",
       heroName: "",
-      footerStyle:{
+      footerStyle: {
         color: "#eee3e3",
-      }
-      
+      },
+      searchHero: "",
+      noSearch: true
+
     };
-  },
-  components: {
-    Footer
   },
   methods: {
     mounted() {
@@ -96,10 +98,6 @@ export default {
           const COUNTER: any = this.$refs.counter;
           const POURCENTAGE: any = this.$refs.pourcentage;
           const HR: any = this.$refs.hr;
-
-          const FOOTER: any = this.$refs.footer
-
-          // console.log("ref footer ", Footer)
 
           let cpt = 0;
           const interval = setInterval(function () {
@@ -145,11 +143,49 @@ export default {
         this.heros[15] = data[15].data.results[randomIMGLastLine];
         this.heros[15].url_name = this.heros[15].name.split(" ").join("_");
       });
+    },
+    search() {
+      let promise = []
+
+      // emit('search', this.searchHero);
+      // for (let i = 0; i < 1600; i += 100) {
+        promise.push(
+          fetch(
+            `${APIURL}characters?nameStartsWith=hulk&ts=1&apikey=${APIPUBLICKEY}&hash=${HASH}&limit=100`
+          ).then((response) => {
+            if (response.ok) {
+              return response.json();
+            } else {
+              throw new Error("La requête n'a pas abouti");
+            }
+          })
+        );
+      // }
+
+      Promise.all(promise).then((data) => {
+
+        this.heros = data[0].data.results;
+        console.log("data: ", data)
+
+        // for (let i = 0; i < 9; i++) {
+        //   this.heros[i] = data[0];
+          this.heros[0].url_name = this.heros[0].name.split(" ").join("_");
+        // }
+
+        console.log("heros: ", this.heros)
+      });
     }
   },
   created: function () {
     this.mounted();
-  }
+  },
+  computed: {
+
+  },
+  components: {
+    Footer,
+    SearchHero
+  },
 };
 </script>
 
@@ -172,26 +208,6 @@ export default {
 
       span {
         color: #dd2852;
-      }
-    }
-  }
-
-  // INPUT DE RECHERCHE
-  #herosNameInputBox {
-    display: flex;
-    flex-flow: row wrap;
-    justify-content: center;
-    margin-top: 25px;
-
-    #herosName {
-      width: 20%;
-      margin-right: 10px;
-      padding: 5px 10px;
-      border-radius: 0;
-      border: 1px solid rgb(24, 23, 23);
-
-      &:focus {
-        outline: none;
       }
     }
   }
