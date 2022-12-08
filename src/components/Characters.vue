@@ -6,7 +6,7 @@
       <h1 id="title"><span>Marvel</span> characters<span>.</span></h1>
     </div>
 
-    <SearchHero @search="search" />
+    <SearchHero @search="search" @reset="characters" />
 
     <div id="charactersImgBox" v-if="(heros.length > 0)">
       <div id="imgCharacterDiv" v-for="hero in heros" :key="hero.id">
@@ -86,8 +86,6 @@ export default {
   },
   methods: {
     mounted() {
-      let promise = [];
-
       onMounted(() => {
         if (this.$refs.counter) {
           const CONTAINER: any = this.$refs.container;
@@ -111,7 +109,9 @@ export default {
           }, 100);
         }
       });
-
+    },
+    characters() {
+      let promise = [];
       for (let i = 0; i < 1600; i += 100) {
         promise.push(
           fetch(
@@ -129,7 +129,6 @@ export default {
       Promise.all(promise).then((data) => {
         let randomIMG = Math.round(Math.random() * 100);
         let randomIMGLastLine = Math.round(Math.random() * 58);
-        // console.log("data all heros: ", data)
 
         this.heros = data;
 
@@ -140,38 +139,40 @@ export default {
         this.heros[15] = data[15].data.results[randomIMGLastLine];
         this.heros[15].url_name = this.heros[15].name.split(" ").join("_");
 
-        // console.log("heros all: ", this.heros)
-
       });
     },
     search(hero: string) {
       let promise = []
+      if (hero != '') {
+        promise.push(
+          fetch(
+            `${APIURL}characters?nameStartsWith=${hero}&ts=1&apikey=${APIPUBLICKEY}&hash=${HASH}&limit=100`
+          ).then((response) => {
+            if (response.ok) {
+              return response.json();
+            } else {
+              throw new Error("La requête n'a pas abouti");
+            }
+          })
+        );
 
-      promise.push(
-        fetch(
-          `${APIURL}characters?nameStartsWith=${hero}&ts=1&apikey=${APIPUBLICKEY}&hash=${HASH}&limit=100`
-        ).then((response) => {
-          if (response.ok) {
-            return response.json();
-          } else {
-            throw new Error("La requête n'a pas abouti");
+        Promise.all(promise).then((data) => {
+          this.heros = data[0].data.results;
+          for (let i = 0; i < this.heros.length; i++) {
+            this.heros[i].url_name = this.heros[i].name.split(" ").join("_");
           }
-        })
-      );
+          return this.heros.filter(her =>
+            her.name.toLowerCase().includes(hero.toLowerCase()))
+        });
+      } else {
+        this.characters()
+      }
 
-      Promise.all(promise).then((data) => {
-
-        this.heros = data[0].data.results;
-
-        for (let i = 0; i < this.heros.length; i++) {
-        this.heros[i].url_name = this.heros[i].name.split(" ").join("_");
-        }
-
-      });
     }
   },
   created: function () {
-    this.mounted();
+    this.mounted()
+    this.characters()
   },
   computed: {
 
@@ -281,21 +282,14 @@ export default {
       }
     }
 
-    // #heroEmpty {
-    //   align-self: center;
-    //   font-size: 50px;
-    //   color: #dd2852;
-    //   margin-top: 2%;
-    //   letter-spacing: 1px;
-    // }
   }
 
   #heroEmpty {
     align-self: center;
-      font-size: 50px;
-      color: #dd2852;
-      margin-top: 2%;
-      letter-spacing: 1px;
+    font-size: 50px;
+    color: #dd2852;
+    margin-top: 2%;
+    letter-spacing: 1px;
   }
 }
 

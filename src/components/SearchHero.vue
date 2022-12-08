@@ -1,7 +1,7 @@
 <template>
     <div id="herosNameInputBox">
-        <input type="text" id="herosName" placeholder="Hero's Name" v-model="searchHero">
-        <input type="button" value="Give Me My Hero" id="btnSearch" @click="$emit('search', searchHero)" required>
+        <input type="text" id="herosName" placeholder="Hero's Name" v-model="searchHero" @keyup="$emit('search', searchHero)">
+        <input type="button" value="Reset Random Heros (Takes ±5sec)" id="btnSearch" @click="$emit('reset')" >
     </div>
 </template>
 
@@ -21,7 +21,7 @@ export default {
         };
     },
     methods: {},
-    emits: ['search']
+    emits: ['search', 'reset']
 }
 </script>
 
