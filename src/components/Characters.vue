@@ -39,6 +39,7 @@
         </div>
       </div>
     </div>
+    <Footer :style="footerStyle" />
   </div>
 
   <div id="counter" ref="counter">
@@ -52,6 +53,7 @@
 import { config } from "../../config";
 import { Md5 } from "ts-md5";
 import { onMounted } from "vue";
+import Footer from "./Footer.vue"
 
 const APIURL = config.MY_API_URL;
 const APIPUBLICKEY = config.MY_PUBLIC_API_KEY;
@@ -75,7 +77,14 @@ export default {
       sizeImg: "/standard_xlarge.",
       link: "details/",
       heroName: "",
+      footerStyle:{
+        color: "#eee3e3",
+      }
+      
     };
+  },
+  components: {
+    Footer
   },
   methods: {
     mounted() {
@@ -88,7 +97,9 @@ export default {
           const POURCENTAGE: any = this.$refs.pourcentage;
           const HR: any = this.$refs.hr;
 
-          // console.log("type ", this.$refs.container)
+          const FOOTER: any = this.$refs.footer
+
+          // console.log("ref footer ", Footer)
 
           let cpt = 0;
           const interval = setInterval(function () {
@@ -138,8 +149,7 @@ export default {
   },
   created: function () {
     this.mounted();
-  },
-  watch: {},
+  }
 };
 </script>
 
@@ -147,6 +157,127 @@ export default {
 .container {
   display: flex;
   flex-flow: column wrap;
+
+  .titleBox {
+    display: flex;
+    flex-grow: 1;
+    justify-content: center;
+    align-items: center;
+    text-transform: uppercase;
+    padding: 5px;
+
+    #title {
+      font-size: 40px;
+      letter-spacing: 5px;
+
+      span {
+        color: #dd2852;
+      }
+    }
+  }
+
+  // INPUT DE RECHERCHE
+  #herosNameInputBox {
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: center;
+    margin-top: 25px;
+
+    #herosName {
+      width: 20%;
+      margin-right: 10px;
+      padding: 5px 10px;
+      border-radius: 0;
+      border: 1px solid rgb(24, 23, 23);
+
+      &:focus {
+        outline: none;
+      }
+    }
+  }
+
+  // IMAGE PERSONNAGES
+  #charactersImgBox {
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: center;
+    margin-top: 25px;
+
+    #imgCharacterDiv {
+      display: flex;
+      position: relative;
+      border-radius: 100%;
+
+      margin: 15px;
+
+      .charactersImg {
+        border: 10px double rgb(24, 23, 23);
+        display: flex;
+        width: 100%;
+        height: auto;
+        border-radius: 100%;
+
+        img {
+          border-radius: 100%;
+        }
+      }
+
+      #infosCharactereBox {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        width: 100%;
+        height: 100%;
+        border-radius: 100%;
+        overflow: hidden;
+        opacity: 0;
+        transition: all 0.5s ease-in-out;
+        transform: scale(0);
+        backface-visibility: hidden;
+
+        a {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          width: 100%;
+          height: 100%;
+          text-decoration: none;
+
+          #charactereName {
+            color: rgb(24, 23, 23);
+            font-size: 22px;
+            font-weight: 900;
+            text-transform: uppercase;
+            text-align: center;
+          }
+        }
+      }
+
+      &:hover #infosCharactereBox {
+        box-shadow: inset 0 0 0 110px rgba(228, 223, 220, 0.575),
+          inset 0 0 0 16px rgba(255, 255, 255, 0.473),
+          0 1px 2px rgba(0, 0, 0, 0.164);
+        opacity: 1;
+        transform: scale(1);
+      }
+
+      &:hover .charactersImg {
+        border: 10px double transparent;
+      }
+    }
+
+    #heroEmpty {
+      font-size: 50px;
+      color: rgb(24, 23, 23);
+      margin-top: 2%;
+      letter-spacing: 1px;
+    }
+  }
 }
 
 // COMPTEUR
@@ -173,127 +304,6 @@ export default {
 
   hr {
     color: #dd2852;
-  }
-}
-
-.titleBox {
-  display: flex;
-  flex-grow: 1;
-  justify-content: center;
-  align-items: center;
-  text-transform: uppercase;
-  padding: 5px;
-
-  #title {
-    font-size: 40px;
-    letter-spacing: 5px;
-
-    span {
-      color: #dd2852;
-    }
-  }
-}
-
-// INPUT DE RECHERCHE
-#herosNameInputBox {
-  display: flex;
-  flex-flow: row wrap;
-  justify-content: center;
-  margin-top: 25px;
-
-  #herosName {
-    width: 20%;
-    margin-right: 10px;
-    padding: 5px 10px;
-    border-radius: 0;
-    border: 1px solid rgb(24, 23, 23);
-
-    &:focus {
-      outline: none;
-    }
-  }
-}
-
-// IMAGE PERSONNAGES
-#charactersImgBox {
-  display: flex;
-  flex-flow: row wrap;
-  justify-content: center;
-  margin-top: 25px;
-
-  #imgCharacterDiv {
-    display: flex;
-    position: relative;
-    border-radius: 100%;
-
-    margin: 15px;
-
-    .charactersImg {
-      border: 10px double rgb(24, 23, 23);
-      display: flex;
-      width: 100%;
-      height: auto;
-      border-radius: 100%;
-
-      img {
-        border-radius: 100%;
-      }
-    }
-
-    #infosCharactereBox {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      position: absolute;
-      top: 0;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      width: 100%;
-      height: 100%;
-      border-radius: 100%;
-      overflow: hidden;
-      opacity: 0;
-      transition: all 0.5s ease-in-out;
-      transform: scale(0);
-      backface-visibility: hidden;
-
-      a {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        width: 100%;
-        height: 100%;
-        text-decoration: none;
-
-        #charactereName {
-          color: rgb(24, 23, 23);
-          font-size: 22px;
-          font-weight: 900;
-          text-transform: uppercase;
-          text-align: center;
-        }
-      }
-    }
-
-    &:hover #infosCharactereBox {
-      box-shadow: inset 0 0 0 110px rgba(228, 223, 220, 0.575),
-        inset 0 0 0 16px rgba(255, 255, 255, 0.473),
-        0 1px 2px rgba(0, 0, 0, 0.164);
-      opacity: 1;
-      transform: scale(1);
-    }
-
-    &:hover .charactersImg {
-      border: 10px double transparent;
-    }
-  }
-
-  #heroEmpty {
-    font-size: 50px;
-    color: rgb(24, 23, 23);
-    margin-top: 2%;
-    letter-spacing: 1px;
   }
 }
 </style>

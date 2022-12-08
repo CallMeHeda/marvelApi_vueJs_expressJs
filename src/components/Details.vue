@@ -9,15 +9,17 @@
         </div>
 
         <div class="titleBox">
-            <h1 id="title" class="title">{{ hero[0].name }}</h1>
+            <h1 class="title">{{ hero[0].name }}</h1>
             <p id="lastModificationDate">Last modification : {{ hero[0].modified }}</p>
         </div>
 
         <div id="dataDescriptionBox">
             <div id="imgAndDescription">
                 <div id="imgDescriptionBox" v-if="hero[0].thumbnail.path">
-                    <img :src="(hero[0].thumbnail.path + sizeImg + hero[0].thumbnail.extension)"
-                        :alt="hero[0].name + ' image'" id="imgDescription" />
+                    <a :href="hero[0].urls[0].url">
+                        <img :src="(hero[0].thumbnail.path + sizeImg + hero[0].thumbnail.extension)"
+                            :alt="hero[0].name + ' image'" id="imgDescription" />
+                    </a>
                 </div>
 
                 <div id="descriptionBox" v-if="hero[0].description">
@@ -25,7 +27,7 @@
                 </div>
 
                 <div id="descriptionBox" v-if="!hero[0].description">
-                    <p id="description">{{ hero[0].name.split(/[(].+/).join("") }} is a hero with some power. Sorry I
+                    <p id="description">{{ split }} is a hero with some power. Sorry I
                         can't tell you more. Google it!</p>
                 </div>
             </div>
@@ -54,7 +56,9 @@
                 <div id="storiesBox">
                     <h3>Stories : ({{ hero[0].stories.available }} available)</h3>
                     <ul id="storiesList" v-if="(hero[0].stories.items.length > 0)">
-                        <li v-for="story in hero[0].stories.items">{{ story.name }}</li>
+                        <li v-for="story in hero[0].stories.items">{{ story.name }}
+                            <span>{{ story.type }}</span>
+                        </li>
                     </ul>
                     <ul id="storiesList" v-if="(hero[0].stories.items.length == 0)">
                         <li>0 Story</li>
@@ -62,6 +66,7 @@
                 </div>
             </div>
         </div>
+        <Footer :style="footerStyle" />
     </div>
 </template>
 
@@ -72,6 +77,8 @@ import { Md5 } from "ts-md5";
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { faCircleLeft } from '@fortawesome/free-solid-svg-icons'
+
+import Footer from "./Footer.vue"
 
 const APIURL = config.MY_API_URL;
 const APIPUBLICKEY = config.MY_PUBLIC_API_KEY;
@@ -86,6 +93,9 @@ const HASH = Md5.hashStr(`1${MY_PRIVATE_API_KEY}${APIPUBLICKEY}`);
 // }
 
 export default {
+    created: function () {
+        this.mounted();
+    },
     data() {
         return {
             heroName: "",
@@ -120,14 +130,21 @@ export default {
                 urls: [{
                     url: ""
                 }]
-            }]
-            ,
-            sizeImg: "/portrait_uncanny."
+            }],
+            sizeImg: "/portrait_uncanny.",
+            footerStyle: {
+                color: "#eee3e3",
+            }
         };
     },
     components: {
-        'font-awesome-icon': FontAwesomeIcon
-
+        'font-awesome-icon': FontAwesomeIcon,
+        Footer
+    },
+    computed: {
+        split(): string {
+            return this.hero[0].name.split(/[(].+/).join("")
+        }
     },
     methods: {
         mounted() {
@@ -137,7 +154,7 @@ export default {
                 this.heroName += name[i].replaceAll('_', ' ');
             }
 
-            const data = fetch(
+            fetch(
                 `${APIURL}characters?name=${this.heroName}&ts=1&apikey=${APIPUBLICKEY}&hash=${HASH}`
             ).then((response) => {
                 if (response.ok) {
@@ -154,10 +171,7 @@ export default {
 
             library.add(faCircleLeft)
         },
-    },
-    created: function () {
-        this.mounted();
-    },
+    }
 };
 </script>
 
@@ -197,21 +211,14 @@ export default {
         text-transform: uppercase;
         padding: 5px;
 
-        #title {
+        .title {
             font-size: 40px;
             letter-spacing: 5px;
-
-            span {
-                color: #dd2852;
-            }
-        }
-
-        .title {
             color: #dd2852;
         }
 
         #lastModificationDate {
-            font-size: 10px;
+            font-size: 11px;
             margin: 20px 0 0 5px;
             text-transform: uppercase;
             letter-spacing: 3px;
@@ -290,6 +297,12 @@ export default {
                     font-size: 17px;
                     padding: 0;
                     margin-top: 5px;
+
+                    span {
+                        font-size: 12px;
+                        color: #dd2852;
+                    }
+                    
                 }
             }
         }
