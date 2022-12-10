@@ -6,14 +6,6 @@
 </template>
 
 <script lang="ts">
-import { config } from "../../config";
-import { Md5 } from "ts-md5";
-
-const APIURL = config.MY_API_URL;
-const APIPUBLICKEY = config.MY_PUBLIC_API_KEY;
-const MY_PRIVATE_API_KEY = config.MY_PRIVATE_API_KEY;
-const HASH = Md5.hashStr(`1${MY_PRIVATE_API_KEY}${APIPUBLICKEY}`)
-
 export default {
     data() {
         return {

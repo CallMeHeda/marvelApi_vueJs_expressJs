@@ -9,29 +9,28 @@
     <SearchHero @search="search" @reset="characters" />
 
     <div id="charactersImgBox" v-if="(heros.length > 0)">
-      <div id="imgCharacterDiv" v-for="hero in heros" :key="hero.id">
-        <div class="charactersImg" v-if="hero.thumbnail.path && hero.thumbnail.path.includes('4c002e0305708')">
-          <img src="../assets/images/notFound.jpg" />
-          <div id="infosCharactereBox" v-if="hero.url_name">
-            <RouterLink :to="{ name: 'details', params: { hero_name: hero.url_name } }">
-              <a class="hrefDescription">
-                <p id="charactereName">{{ hero.name }}</p>
-              </a>
-            </RouterLink>
+      <div id="imgCharacterDiv1" v-for="hero in heros">
+        <div id="imgCharacterDiv2" v-for="her in hero">
+          <div class="charactersImg" v-if="her.thumbnail.path && her.thumbnail.path.includes('4c002e0305708')">
+            <img src="../assets/images/notFound.jpg" />
+            <div id="infosCharactereBox" v-if="her.url_name">
+              <RouterLink :to="{ name: 'details', params: { hero_name: her.url_name } }">
+                <a class="hrefDescription">
+                  <p id="charactereName">{{ her.name }}</p>
+                </a>
+              </RouterLink>
+            </div>
           </div>
-        </div>
-        <div class="charactersImg" v-if="
-          hero.thumbnail.path &&
-          !hero.thumbnail.path.includes('4c002e0305708')
-        ">
-          <img :src="hero.thumbnail.path + sizeImg + hero.thumbnail.extension" />
-          <div id="infosCharactereBox" v-if="hero.url_name">
-            <RouterLink :to="{ name: 'details', params: { hero_name: hero.url_name } }">
-              <a class="hrefDescription">
-                <p id="charactereName">{{ hero.name }}</p>
-                <!-- <p id="charactereName" @click="$emit('getHeroName', hero.name)">{{ hero.name }}</p> -->
-              </a>
-            </RouterLink>
+          <div class="charactersImg" v-if="her.thumbnail.path && !her.thumbnail.path.includes('4c002e0305708')">
+            <img :src="her.thumbnail.path + sizeImg + her.thumbnail.extension" />
+            <div id="infosCharactereBox" v-if="her.url_name">
+              <RouterLink :to="{ name: 'details', params: { hero_name: her.url_name } }">
+                <a class="hrefDescription">
+                  <p id="charactereName">{{ her.name }}</p>
+                  <!-- <p id="charactereName" @click="$emit('getHeroName', her.name)">{{ her.name }}</p> -->
+                </a>
+              </RouterLink>
+            </div>
           </div>
         </div>
       </div>
@@ -48,21 +47,16 @@
 </template>
 
 <script lang="ts">
-import { config } from "../../config";
-import { Md5 } from "ts-md5";
 import { onMounted } from "vue";
 import SearchHero from "./SearchHero.vue"
 import Footer from "./Footer.vue"
 
-const APIURL = config.MY_API_URL;
-const APIPUBLICKEY = config.MY_PUBLIC_API_KEY;
-const MY_PRIVATE_API_KEY = config.MY_PRIVATE_API_KEY;
-const HASH = Md5.hashStr(`1${MY_PRIVATE_API_KEY}${APIPUBLICKEY}`);
+const APIURL = "http://localhost:3000/";
 
 export default {
   data() {
     return {
-      heros: [
+      heros: [[
         {
           id: Number,
           name: "",
@@ -72,16 +66,13 @@ export default {
           },
           url_name: "",
         },
-      ],
+      ]],
       sizeImg: "/standard_xlarge.",
       link: "details/",
       heroName: "",
       footerStyle: {
         color: "#eee3e3",
       },
-      searchHero: "",
-      noSearch: true
-
     };
   },
   methods: {
@@ -110,43 +101,45 @@ export default {
         }
       });
     },
-    characters() {
+    async characters() {
       let promise = [];
-      for (let i = 0; i < 1600; i += 100) {
-        promise.push(
-          fetch(
-            `${APIURL}characters?&ts=1&apikey=${APIPUBLICKEY}&hash=${HASH}&limit=100&offset=${i}`
-          ).then((response) => {
+      promise.push(
+        await fetch(
+          `${APIURL}characters`).then((response) => {
             if (response.ok) {
               return response.json();
             } else {
               throw new Error("La requête n'a pas abouti");
             }
           })
-        );
-      }
+      );
 
       Promise.all(promise).then((data) => {
+
         let randomIMG = Math.round(Math.random() * 100);
         let randomIMGLastLine = Math.round(Math.random() * 58);
 
         this.heros = data;
 
-        for (let i = 0; i < this.heros.length - 1; i++) {
-          this.heros[i] = data[i].data.results[randomIMG];
-          this.heros[i].url_name = this.heros[i].name.split(" ").join("_");
+        for (let i = 0; i < this.heros[0].length - 1; i++) {
+          this.heros[0][i] = data[0][i].data.results[randomIMG];
+          this.heros[0][i].url_name = this.heros[0][i].name.split(" ").join("_");
         }
-        this.heros[15] = data[15].data.results[randomIMGLastLine];
-        this.heros[15].url_name = this.heros[15].name.split(" ").join("_");
-
-      });
+        this.heros[0][15] = data[0][15].data.results[randomIMGLastLine];
+        this.heros[0][15].url_name = this.heros[0][15].name.split(" ").join("_");
+      })
     },
-    search(hero: string) {
+    async search(hero: string) {
       let promise = []
       if (hero != '') {
         promise.push(
-          fetch(
-            `${APIURL}characters?nameStartsWith=${hero}&ts=1&apikey=${APIPUBLICKEY}&hash=${HASH}&limit=100`
+          await fetch(
+            `${APIURL}characters/${hero}`, {
+            method: 'GET',
+            headers: {
+              accept: 'application/json',
+            }
+          }
           ).then((response) => {
             if (response.ok) {
               return response.json();
@@ -157,18 +150,25 @@ export default {
         );
 
         Promise.all(promise).then((data) => {
-          this.heros = data[0].data.results;
-          for (let i = 0; i < this.heros.length; i++) {
-            this.heros[i].url_name = this.heros[i].name.split(" ").join("_");
-          }
-          return this.heros.filter(her =>
-            her.name.toLowerCase().includes(hero.toLowerCase()))
+          
+          this.heros = data;
+          console.log("HEROS SEARCH : ", this.heros.length)
+          // for (let i = 0; i < this.heros[0].length; i++) {
+          //   this.heros[0][i] = data[0].data.results;
+          //   this.heros[0][i].url_name = this.heros[0][i].name.split(" ").join("_");
+
+          //   console.log("ghtht " , this.heros[0][i])
+          // }
+          // return this.heros.filter(her => her.name.toLowerCase().includes(hero.toLowerCase()))
         });
       } else {
         this.characters()
       }
-
+      // this.$route.query.q = hero
+      // console.log(this.$route.query.q)
     }
+
+    
   },
   created: function () {
     this.mounted()
@@ -214,72 +214,81 @@ export default {
     justify-content: center;
     margin-top: 25px;
 
-    #imgCharacterDiv {
+    #imgCharacterDiv1 {
       display: flex;
+      flex-flow: row wrap;
+      justify-content: center;
       position: relative;
       border-radius: 100%;
-
       margin: 15px;
 
-      .charactersImg {
-        border: 10px double rgb(24, 23, 23);
+      #imgCharacterDiv2 {
         display: flex;
-        width: 100%;
-        height: auto;
-        border-radius: 100%;
+        position: relative;
+        margin: 15px;
 
-        img {
+        .charactersImg {
+          border: 10px double rgb(24, 23, 23);
+          display: flex;
+          width: 100%;
+          height: auto;
           border-radius: 100%;
+
+          img {
+            border-radius: 100%;
+          }
         }
-      }
 
-      #infosCharactereBox {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        position: absolute;
-        top: 0;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        width: 100%;
-        height: 100%;
-        border-radius: 100%;
-        overflow: hidden;
-        opacity: 0;
-        transition: all 0.5s ease-in-out;
-        transform: scale(0);
-        backface-visibility: hidden;
-
-        a {
+        #infosCharactereBox {
           display: flex;
           justify-content: center;
           align-items: center;
+          position: absolute;
+          top: 0;
+          bottom: 0;
+          left: 0;
+          right: 0;
           width: 100%;
           height: 100%;
-          text-decoration: none;
+          border-radius: 100%;
+          overflow: hidden;
+          opacity: 0;
+          transition: all 0.5s ease-in-out;
+          transform: scale(0);
+          backface-visibility: hidden;
 
-          #charactereName {
-            color: rgb(24, 23, 23);
-            font-size: 22px;
-            font-weight: 900;
-            text-transform: uppercase;
-            text-align: center;
+          a {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            height: 100%;
+            text-decoration: none;
+
+            #charactereName {
+              color: rgb(24, 23, 23);
+              font-size: 22px;
+              font-weight: 900;
+              text-transform: uppercase;
+              text-align: center;
+            }
           }
+        }
+
+        &:hover #infosCharactereBox {
+          box-shadow: inset 0 0 0 110px rgba(228, 223, 220, 0.575),
+            inset 0 0 0 16px rgba(255, 255, 255, 0.473),
+            0 1px 2px rgba(0, 0, 0, 0.164);
+          opacity: 1;
+          transform: scale(1);
+        }
+
+        &:hover .charactersImg {
+          border: 10px double transparent;
         }
       }
 
-      &:hover #infosCharactereBox {
-        box-shadow: inset 0 0 0 110px rgba(228, 223, 220, 0.575),
-          inset 0 0 0 16px rgba(255, 255, 255, 0.473),
-          0 1px 2px rgba(0, 0, 0, 0.164);
-        opacity: 1;
-        transform: scale(1);
-      }
 
-      &:hover .charactersImg {
-        border: 10px double transparent;
-      }
     }
 
   }
