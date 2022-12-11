@@ -71,7 +71,6 @@
 </template>
 
 <script lang="ts">
-import { config } from "../../config";
 import { Md5 } from "ts-md5";
 
 import { library } from '@fortawesome/fontawesome-svg-core'
@@ -80,17 +79,7 @@ import { faCircleLeft } from '@fortawesome/free-solid-svg-icons'
 
 import Footer from "./Footer.vue"
 
-const APIURL = config.MY_API_URL;
-const APIPUBLICKEY = config.MY_PUBLIC_API_KEY;
-const MY_PRIVATE_API_KEY = config.MY_PRIVATE_API_KEY;
-const HASH = Md5.hashStr(`1${MY_PRIVATE_API_KEY}${APIPUBLICKEY}`);
-
-// const OPTIONS = {
-//     weekday: "long",
-//     day: "2-digit",
-//     month: "long",
-//     year: "numeric",
-// }
+const APIURL = "http://localhost:3000/";
 
 export default {
     created: function () {
@@ -156,7 +145,7 @@ export default {
             }
 
             fetch(
-                `${APIURL}characters?name=${this.heroName}&ts=1&apikey=${APIPUBLICKEY}&hash=${HASH}`
+                `${APIURL}characters/details/${this.heroName}`
             ).then((response) => {
                 if (response.ok) {
                     return response.json();
@@ -238,13 +227,11 @@ export default {
             margin: 100px 0;
             padding: 35px 0;
 
-            // border: 1px solid red;
             #imgDescriptionBox {
                 display: flex;
                 justify-content: center;
                 margin-right: 50px;
 
-                // flex-grow: 1;
                 img {
                     box-shadow: 0 10px 55px 5px rgba(5, 5, 5, 0.445);
                     border-radius: 20px;
@@ -258,8 +245,6 @@ export default {
                 color: rgb(24, 23, 23);
                 margin: 0 50px;
 
-                // flex-grow: 1;
-                // margin: 20px 50px 0 50px;
                 p {
                     text-align: center;
                     letter-spacing: 1px;
@@ -271,7 +256,6 @@ export default {
         #listBox {
             display: flex;
             flex-flow: row nowrap;
-            // justify-content: space-around;
             padding-bottom: 50px;
             margin: 0 50px;
 
@@ -303,7 +287,6 @@ export default {
                         font-size: 12px;
                         color: #dd2852;
                     }
-                    
                 }
             }
         }
